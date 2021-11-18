@@ -1,6 +1,6 @@
 
-
-const canvas = document.getElementById("canvas");
+// Set global variable i.e. "g_state" to be the canvas element
+const g_state = document.getElementById("canvas");
 
 function BouncingBall(radius, fill_color, x_location, y_location, x_velocity, y_velocity) {
     this.radius = radius;
@@ -13,7 +13,7 @@ function BouncingBall(radius, fill_color, x_location, y_location, x_velocity, y_
 BouncingBall.prototype = new BouncingBall();
 
 BouncingBall.prototype.draw = function() {
-    const context = canvas.getContext('2d');
+    const context = g_state.getContext('2d');
     context.beginPath()
     context.arc(this.x, this.y, this.radius, 0, Math.PI * 2, false);
     context.fillStyle = this.fill_color;
@@ -23,11 +23,11 @@ BouncingBall.prototype.draw = function() {
 }
 
 BouncingBall.prototype.move = function() {
-    if (this.x  + this.radius > canvas.width || this.x - this.radius - 1 < 0) {
+    if (this.x  + this.radius > g_state.width || this.x - this.radius - 1 < 0) {
         this.x_velocity = -1 * this.x_velocity;
     }
     
-    if (this.y + this.radius > canvas.height || this.y - this.radius - 1 < 0) {
+    if (this.y + this.radius > g_state.height || this.y - this.radius - 1 < 0) {
         this.y_velocity = -1 * this.y_velocity;
     }
 
@@ -83,7 +83,7 @@ function allMove() {
 
 function animate(ballList) {
     requestAnimationFrame(animate.bind(null, ballList));
-    const context = canvas.getContext('2d');
+    const context = g_state.getContext('2d');
     context.clearRect(0, 0, innerWidth, innerHeight);
     for (let i = 0; i < 4; i++) {
         ballList[i].draw();
@@ -97,8 +97,8 @@ function animate(ballList) {
 // button.addEventListener('click', allMove)
 
 // console.log(ballList)
-canvas.width = window.innerWidth;
-canvas.height = window.innerHeight;
+g_state.width = window.innerWidth;
+g_state.height = window.innerHeight;
 const ballList = allMove();
 animate(ballList);
 
