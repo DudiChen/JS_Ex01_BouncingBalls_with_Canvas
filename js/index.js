@@ -1,131 +1,114 @@
-// REMINDER: This is a global variable! We are allowed to use only one! 
-let id = null;
 
-// function myMove() {
-//     const my_ball = document.getElementById("my_ball");
-//     const board = document.getElementById("main_board");
-//     let dir_x = Math.random() > 0.5 ? 1 : -1;
-//     let dir_y = Math.random() > 0.5 ? 1 : -1;
-    
-//     clearInterval(id);
-//     id = setInterval(frame, 10);
-//     randomizeStartLocation(my_ball, board);
-//     function frame() {
-        
-//         my_ball.style.top = my_ball.offsetTop + dir_y + 'px';
-//         my_ball.style.left = my_ball.offsetLeft + dir_x + 'px';
-        
-//         if(my_ball.offsetTop + my_ball.offsetHeight == board.offsetHeight || my_ball.offsetTop == 0)
-//             dir_y = -1 * dir_y
 
-//         if(my_ball.offsetLeft + my_ball.offsetWidth == board.offsetWidth || my_ball.offsetLeft == 0)
-//             dir_x = -1 * dir_x
-//     }
-// }
+const canvas = document.getElementById("canvas");
 
-function BouncingBall(init_axis)
-{
-    ball.call(this);
-    this.init_axis = init_axis;
-    direction_x = init_axis != 4 && ((Math.random() < 0.5) || (init_axis == 2)) ? -1 : 1;
-    direction_y = init_axis != 3 && ((Math.random() < 0.5) || (init_axis == 1)) ? -1 : 1;
-    velocity = 1;
+function BouncingBall(radius, fill_color, x_location, y_location, x_velocity, y_velocity) {
+    this.radius = radius;
+    this.fill_color = fill_color;
+    this.x = x_location;
+    this.y = y_location;
+    this.x_velocity = x_velocity;
+    this.y_velocity = y_velocity;
 }
 BouncingBall.prototype = new BouncingBall();
 
+BouncingBall.prototype.draw = function() {
+    const context = canvas.getContext('2d');
+    context.beginPath()
+    context.arc(this.x, this.y, this.radius, 0, Math.PI * 2, false);
+    context.fillStyle = this.fill_color;
+    // context.strokeStyle = 'black';
+    context.fill();
+    context.stroke();
+}
+
+BouncingBall.prototype.move = function() {
+    if (this.x  + this.radius > canvas.width || this.x - this.radius - 1 < 0) {
+        this.x_velocity = -1 * this.x_velocity;
+    }
+    
+    if (this.y + this.radius > canvas.height || this.y - this.radius - 1 < 0) {
+        this.y_velocity = -1 * this.y_velocity;
+    }
+
+    this.x += this.x_velocity;
+    this.y += this.y_velocity;
+}
+
+const getRandomVelocity = function() { return getRandomValueInRange(1, 11); }
+const getRandomRadius = function () { return getRandomValueInRange(20, 80); }
+
+const getRandomValueInRange = function(min, max) { return Math.floor(Math.random() * (max - min)) + min; }
+
 function allMove() {
     let ballList = [];
-    const board = document.getElementById("main_board");
-
-    for(let i = 1; i <= 4 ; i++) {
-        // ballList[i] = new BouncingBall(i);
-
-        ballList[i] = {
-            element: document.getElementById(`ball${i}`),
-            dir_x: Math.random() > 0.5 ? 1 : -1,
-            dir_y: Math.random() > 0.5 ? 1 : -1,
-            init_axis: i
-        }
-
-        switch(ballList[i].init_axis)
+    for (let i = 0; i < 4 ; i++) {
+        let rad = getRandomRadius();
+        let color;
+        let x;
+        let y;
+        let x_vel = getRandomVelocity();
+        let y_vel = getRandomVelocity();
+        switch(i)
         {
+            case 0:
+                color = 'blue';
+                x = getRandomValueInRange(rad + 1, innerWidth - rad - 1);
+                y = rad + 1;
+                break;
             case 1:
-                ballList[i].dir_y = -1;
+                color = 'green';
+                x = innerWidth - (rad + 1)
+                y = getRandomValueInRange(rad + 1, innerHeight - rad - 1);
                 break;
             case 2:
-                ballList[i].dir_x = -1;
+                color = 'yellow';
+                x = getRandomValueInRange(rad + 1, innerWidth - 1)
+                y = innerHeight - (rad + 1);
                 break;
             case 3:
-                ballList[i].dir_y = 1;
-                break;
-            case 4:
-                ballList[i].dir_x = 1;
+                color = 'red';
+                x = rad + 1;
+                y = getRandomValueInRange(rad + 1, innerHeight - rad - 1);
                 break;
             default:
                 break;
         }
-
-        randomizeStartLocation(ballList[i], board);
-    }
-
-    clearInterval(id);
-    id = setInterval(frame, 10);
-
-    function frame() {
         
-        for(let i = 1 ; i <= 4 ; i++) {
-            let currentBall = ballList[i].element;
-
-            currentBall.style.top = currentBall.offsetTop + ballList[i].dir_y + 'px';
-            currentBall.style.left = currentBall.offsetLeft + ballList[i].dir_x + 'px';
-            
-            if(currentBall.offsetTop + currentBall.offsetHeight == board.offsetHeight || currentBall.offsetTop == 0)
-                ballList[i].dir_y = -1 * ballList[i].dir_y
-    
-            if(currentBall.offsetLeft + currentBall.offsetWidth == board.offsetWidth || currentBall.offsetLeft == 0)
-                ballList[i].dir_x = -1 * ballList[i].dir_x
-        }
+        ballList[i] = new BouncingBall(rad, color, x, y, x_vel, y_vel);
     }
+
+    return ballList;
 }
 
-function randomizeStartLocation(ball_data, board) {
-    let ball = ball_data.element;
-    if(Math.floor(Math.random() * 2)) {
-        ball.style.top = 0;
-        ball.style.left = board.offsetWidth - ball.offsetWidth;
-        // ball.style.top = Math.floor(Math.random() * (board.offsetHeight - ball.offsetHeight - 1));
-        // ball.style.left = Math.random > 0.5 ? 1 : (board.offsetWidth - ball.offsetWidth - 1);
-    }
-    else {
-        ball.style.left = Math.floor(Math.random() * (board.offsetWidth - ball.offsetWidth - 1));
-        ball.style.top = Math.random > 0.5 ? 1 : (board.offsetHeight - ball.offsetHeight - 1);
-    }
-
-    switch(ball_data.init_axis) {
-        case 1:
-            // ball.style.top = 0;
-            ball.style.top = 0;
-            console.log("offsetHeight: " + (board.offsetHeight - ball.offsetHeight))
-            console.log("offsetTop: " + (board.offsetTop - ball.offsetTop))
-            break;
-        case 2:
-            // ball.style.right = 0;
-            ball.style.left = board.offsetWidth - ball.offsetWidth;
-            break;
-        case 3:
-            ball.style.top = board.offsetHeight - ball.offsetHeight;
-            // ball.style.top = board...
-            break;
-        case 4:
-            ball.style.left = 0;
-            break;
-        default:
-            break;
+function animate(ballList) {
+    requestAnimationFrame(animate.bind(null, ballList));
+    const context = canvas.getContext('2d');
+    context.clearRect(0, 0, innerWidth, innerHeight);
+    for (let i = 0; i < 4; i++) {
+        ballList[i].draw();
+        ballList[i].move();
     }
 }
 
 
-const button = document.getElementById('btn1');
-console.log(button)
-button.addEventListener('click', allMove)
+// const button = document.getElementById('btn1');
+// console.log(button)
+// button.addEventListener('click', allMove)
 
+// console.log(ballList)
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+const ballList = allMove();
+animate(ballList);
+
+// TESTING:
+// const context = canvas.getContext('2d');
+// canvas.width = window.innerWidth;
+// canvas.height = window.innerHeight;
+// context.beginPath()
+// context.arc(30, 30, 30, 0, Math.PI * 2, false);
+// context.fillStyle = 'green';
+// context.strokeStyle = 'black';
+// context.stroke()
+// context.fill();
