@@ -41,14 +41,14 @@ const getRandomRadius = function () { return getRandomValueInRange(20, 80); }
 const getRandomValueInRange = function(min, max) { return Math.floor(Math.random() * (max - min)) + min; }
 
 function allMove() {
-    let ballList = [];
+    const ballList = [];
     for (let i = 0; i < 4 ; i++) {
-        let rad = getRandomRadius();
+        const rad = getRandomRadius();
         let color;
         let x;
         let y;
-        let x_vel = getRandomVelocity();
-        let y_vel = getRandomVelocity();
+        const x_vel = getRandomVelocity();
+        const y_vel = getRandomVelocity();
         switch(i)
         {
             case 0:
@@ -89,6 +89,7 @@ function animate(ballList) {
         ballList[i].draw();
         ballList[i].move();
     }
+
 }
 
 
